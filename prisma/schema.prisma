@@ -141,34 +141,40 @@ model Quiz {
   @@index([courseId])
 }
 
+
+
 model Question {
-  id                 String @id @default(uuid())
-  text               String
+    id            Int        @id @default(autoincrement()) // Auto-incremented primary key
+    text          String // Text of the question
+    correctOption String // Correct answer to the question
+    options       Option[] // Relation to Option model for multiple choices
+    responses     Response[] // Relation to Response model for user responses
 
-  quizId String
-  quiz   Quiz   @relation(fields: [quizId], references: [id])
+    quizId String
+    quiz   Quiz   @relation(fields: [quizId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Answer    Answer[]
-
-  @@index([quizId])
+    @@index([correctOption], name: "idx_question_correct_option") // Index on correctOption for optimized querying
 }
 
-model Answer {
-  id     String @id @default(uuid())
-  userId String
+// Option model represents choices for a quiz question
+model Option {
+    id         Int      @id @default(autoincrement()) // Auto-incremented primary key
+    question   Question @relation(fields: [questionId], references: [id]) // Relation to Question model
+    questionId Int // Foreign key to Question model
+    text       String // Text of the option
 
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id])
-  options            String
-  correctAnswerIndex Int
+    @@index([questionId], name: "idx_option_question_id") // Index on questionId for optimized querying
+}
 
-  selectedOptionIndex Int
+// Response model represents a user's response to a quiz question
+model Response {
+    id             Int      @id @default(autoincrement()) // Auto-incremented primary key
+    userId         String // User identifier
+    question       Question @relation(fields: [questionId], references: [id]) // Relation to Question model
+    questionId     Int // Foreign key to Question model
+    selectedOption String // Option selected by the user
+    isCorrect      Boolean // Indicates if the response is correct
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, questionId])
-  @@index([questionId])
+    @@index([userId], name: "idx_response_user_id") // Index on userId for optimized querying
+    @@index([questionId], name: "idx_response_question_id") // Index on questionId for optimized querying
 }
