@@ -1,0 +1,47 @@
+// datasource block specifies the database connection details
+datasource db {
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
+}
+
+// generator block configures the Prisma client generator
+generator client {
+    provider = "prisma-client-js"
+}
+
+// schema.prisma
+
+// Question model represents a quiz question
+model Question {
+    id            Int        @id @default(autoincrement()) // Auto-incremented primary key
+    text          String // Text of the question
+    correctOption String // Correct answer to the question
+    options       Option[] // Relation to Option model for multiple choices
+    responses     Response[] // Relation to Response model for user responses
+
+    @@index([correctOption], name: "idx_question_correct_option") // Index on correctOption for optimized querying
+}
+
+// Option model represents choices for a quiz question
+model Option {
+    id         Int      @id @default(autoincrement()) // Auto-incremented primary key
+    question   Question @relation(fields: [questionId], references: [id]) // Relation to Question model
+    questionId Int // Foreign key to Question model
+    text       String // Text of the option
+
+    @@index([questionId], name: "idx_option_question_id") // Index on questionId for optimized querying
+}
+
+// Response model represents a user's response to a quiz question
+model Response {
+    id             Int      @id @default(autoincrement()) // Auto-incremented primary key
+    userId         String // User identifier
+    question       Question @relation(fields: [questionId], references: [id]) // Relation to Question model
+    questionId     Int // Foreign key to Question model
+    selectedOption String // Option selected by the user
+    isCorrect      Boolean // Indicates if the response is correct
+
+    @@index([userId], name: "idx_response_user_id") // Index on userId for optimized querying
+    @@index([questionId], name: "idx_response_question_id") // Index on questionId for optimized querying
+}
