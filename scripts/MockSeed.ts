@@ -7,7 +7,6 @@ async function seedMockData() {
   const quiz = await prisma.quiz.create({
     data: {
       title: 'Sample Quiz',
-      description: 'This is a sample quiz for testing purposes',
       courseId: 'abfc2f11-bd95-4541-9ff2-2d99772921db',
     },
   });
@@ -16,18 +15,32 @@ async function seedMockData() {
   const question1 = await prisma.question.create({
     data: {
       text: 'What is the capital of France?',
-      options: JSON.stringify(['Paris', 'Berlin', 'Madrid', 'Rome']),
-      correctAnswerIndex: 0,
       quizId: quiz.id,
+      correctOption: 'Paris',
+      options: {
+        create: [
+          { text: 'Paris' },
+          { text: 'Berlin' },
+          { text: 'Madrid' },
+          { text: 'Rome' },
+        ],
+      },
     },
   });
 
   const question2 = await prisma.question.create({
     data: {
       text: 'Which planet is known as the Red Planet?',
-      options: JSON.stringify(['Earth', 'Mars', 'Jupiter', 'Venus']),
-      correctAnswerIndex: 1,
       quizId: quiz.id,
+      correctOption: 'Mars',
+      options: {
+        create: [
+          { text: 'Earth' },
+          { text: 'Mars' },
+          { text: 'Jupiter' },
+          { text: 'Venus' },
+        ],
+      },
     },
   });
 
@@ -40,24 +53,24 @@ async function seedMockData() {
     },
   });
 
-  // User attempts the quiz (first attempt)
-  const attempt1 = await prisma.answer.create({
+  // User responses to the questions
+  const response1 = await prisma.response.create({
     data: {
       userId: user.userId,
       questionId: question1.id,
-      selectedOptionIndex: 0,
+      selectedOption: 'Paris',
+      isCorrect: true,
     },
   });
 
-  // User attempts the quiz (second attempt)
-  const attempt2 = await prisma.answer.create({
+  const response2 = await prisma.response.create({
     data: {
       userId: user.userId,
       questionId: question2.id,
-      selectedOptionIndex: 1,
+      selectedOption: 'Mars',
+      isCorrect: true,
     },
   });
-
 
   console.log('Mock data seeded successfully');
 }
