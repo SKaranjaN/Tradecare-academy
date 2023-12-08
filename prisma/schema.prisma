@@ -129,7 +129,6 @@ model StripeCustomer {
 model Quiz {
   id          String  @id @default(uuid())
   title       String
-  description String?
   courseId    String
   course      Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
@@ -145,8 +144,6 @@ model Quiz {
 model Question {
   id                 String @id @default(uuid())
   text               String
-  options            String
-  correctAnswerIndex Int
 
   quizId String
   quiz   Quiz   @relation(fields: [quizId], references: [id])
@@ -164,6 +161,8 @@ model Answer {
 
   questionId String
   question   Question @relation(fields: [questionId], references: [id])
+  options            String
+  correctAnswerIndex Int
 
   selectedOptionIndex Int
 

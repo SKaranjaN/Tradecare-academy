@@ -84,11 +84,11 @@ const ChapterIdPage = async ({
               />
             )}
 
-            {/* Conditionally render the QuizComponent only if the chapter is marked as complete */}
-            {userProgress?.isCompleted && <QuizComponent />}
           </div>
           <Separator />
           <div>
+            {/* Conditionally render the QuizComponent only if the chapter is marked as complete */}
+            {userProgress?.isCompleted && <QuizComponent />}
             <Preview value={chapter.description!} />
           </div>
           {!!attachments.length && (
